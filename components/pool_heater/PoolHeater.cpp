@@ -12,14 +12,14 @@ void PoolHeater::setup() {
 
 #ifdef USE_ESP32
     ESP_LOGI(TAG, "ESP32 detected. Initializing ESP32HeaterDriver...");
-    // TX/RX = 0/0. openDrain = false, invertTx = true (BJT logic), invertRx = false
-    auto* esp32_driver = new ESP32HeaterDriver(0, 0, false, true, false);
-    esp32_driver->setRmtChannels(0, 2);
+    // Note: ESP32HeaterDriver takes (rxPin, txPin, ...), unlike the ESP8266 driver.
+    auto* esp32_driver = new ESP32HeaterDriver(rx_pin_, tx_pin_, open_drain_tx_, invert_tx_, invert_rx_);
+    esp32_driver->setRmtChannels(rmt_tx_channel_, rmt_rx_channel_);
     driver = esp32_driver;
 #elif defined(USE_ESP8266)
     ESP_LOGI(TAG, "ESP8266 detected. Initializing ESP8266HeaterDriver...");
-    // TX = D2 (4), RX = D7 (13). openDrain = false, invertTx = true (BJT logic), invertRx = false
-    driver = new ESP8266HeaterDriver(4, 13, false, true, false); 
+    // Note: ESP8266HeaterDriver takes (txPin, rxPin, ...).
+    driver = new ESP8266HeaterDriver(tx_pin_, rx_pin_, open_drain_tx_, invert_tx_, invert_rx_);
 #endif
     
     if (driver != nullptr) {
@@ -54,6 +54,16 @@ void PoolHeater::loop() {
 
 void PoolHeater::dump_config() {
     ESP_LOGCONFIG(TAG, "Pool Heater Custom Component:");
+    ESP_LOGCONFIG(TAG, "  TX Pin: GPIO%u", tx_pin_);
+    ESP_LOGCONFIG(TAG, "  RX Pin: GPIO%u", rx_pin_);
+    ESP_LOGCONFIG(TAG, "  Open-drain TX: %s", YESNO(open_drain_tx_));
+    ESP_LOGCONFIG(TAG, "  Invert TX: %s", YESNO(invert_tx_));
+    ESP_LOGCONFIG(TAG, "  Invert RX: %s", YESNO(invert_rx_));
+#ifdef USE_ESP32
+    ESP_LOGCONFIG(TAG, "  RMT TX channel: %u", rmt_tx_channel_);
+    ESP_LOGCONFIG(TAG, "  RMT RX channel: %u", rmt_rx_channel_);
+#endif
+    ESP_LOGCONFIG(TAG, "  Driver: %s", driver != nullptr ? "OK" : "NOT INITIALIZED");
 }
 
 // -----------------------------------------------------------------------------
