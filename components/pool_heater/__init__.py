@@ -6,6 +6,10 @@ from esphome.const import CONF_ID, CONF_RX_PIN, CONF_TX_PIN
 pool_heater_ns = cg.esphome_ns.namespace('pool_heater')
 PoolHeaterComponent = pool_heater_ns.class_('PoolHeater', cg.Component)
 
+# pool-heater-core version this wrapper is built against (commit SHA or tag).
+# Requires >= 2.0.0: invert_tx / invert_rx mean "the front end inverts the signal".
+POOL_HEATER_CORE_REF = "5695aca4c605dfef7fb5539db9087987f20a3725"
+
 CONF_OPEN_DRAIN_TX = "open_drain_tx"
 CONF_INVERT_TX = "invert_tx"
 CONF_INVERT_RX = "invert_rx"
@@ -19,7 +23,7 @@ CONFIG_SCHEMA = cv.Schema({
     cv.Required(CONF_RX_PIN): pins.internal_gpio_input_pin_number,
     cv.Optional(CONF_OPEN_DRAIN_TX, default=True): cv.boolean,
     cv.Optional(CONF_INVERT_TX, default=False): cv.boolean,
-    cv.Optional(CONF_INVERT_RX, default=True): cv.boolean,
+    cv.Optional(CONF_INVERT_RX, default=False): cv.boolean,
     # ESP32 only (rejected on other platforms). No schema default here so that
     # ESP8266 configs validate; the C++ defaults are TX=0 / RX=2.
     # On ESP32-S3 the RX channel must be 4-7 (e.g. rmt_rx_channel: 4).
@@ -28,7 +32,11 @@ CONFIG_SCHEMA = cv.Schema({
 }).extend(cv.COMPONENT_SCHEMA)
 
 async def to_code(config):
-    cg.add_library("pool-heater-core=https://github.com/The-sultan/pool-heater-core.git", None)
+    cg.add_library(
+        "pool-heater-core",
+        None,
+        f"https://github.com/The-sultan/pool-heater-core.git#{POOL_HEATER_CORE_REF}",
+    )
 
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)

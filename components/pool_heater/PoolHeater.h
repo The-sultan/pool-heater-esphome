@@ -50,7 +50,7 @@ private:
     uint8_t rx_pin_{0};
     bool open_drain_tx_{true};
     bool invert_tx_{false};
-    bool invert_rx_{true};
+    bool invert_rx_{false};
     uint8_t rmt_tx_channel_{0};
     uint8_t rmt_rx_channel_{2};
 };

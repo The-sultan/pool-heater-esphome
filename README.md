@@ -7,6 +7,11 @@ To use this you need an ESP8266 (there's also code for ESP32, still not tested) 
 > `open_drain_tx` / `invert_tx` / `invert_rx` now target a BSS138 level shifter; if you use an inverting transistor
 > front end, see [Inverting transistor front end](#inverting-transistor-front-end-eg-2n2222).
 
+> **Semantic change (pool-heater-core 2.0.0):** `invert_tx` and `invert_rx` now both mean *"the front end inverts
+> the signal"*, on ESP8266 and ESP32 alike. Previously the ESP8266 driver used the opposite meaning for RX, so a
+> BSS138 needed `invertRx = true` there. If you relied on the old ESP8266 RX polarity (for example a local build
+> with `invertRx = true` on a BSS138), flip it: BSS138 is now `invert_rx: false`, 2N2222 is now `invert_rx: true`.
+
 ## Example: D1 Mini + BSS138 level-shifter module
 
 ```yaml
@@ -36,12 +41,13 @@ climate:
 | `tx_pin`         | yes      | —       | GPIO used to transmit to the heat pump data line. |
 | `rx_pin`         | yes      | —       | GPIO used to receive from the heat pump data line. |
 | `open_drain_tx`  | no       | `true`  | Drive TX as open-drain (only pulls low, never drives high). |
-| `invert_tx`      | no       | `false` | Invert the TX signal. |
-| `invert_rx`      | no       | `true`  | Invert the RX signal. |
+| `invert_tx`      | no       | `false` | Set to `true` if the TX front end inverts the signal. |
+| `invert_rx`      | no       | `false` | Set to `true` if the RX front end inverts the signal. |
 | `rmt_tx_channel` | no       | `0`     | **ESP32 only.** RMT channel used for TX. |
 | `rmt_rx_channel` | no       | `2`     | **ESP32 only.** RMT channel used for RX. |
 
 The defaults match a non-inverting BSS138 bidirectional level-shifter module, which is the reference hardware.
+The invert flags mean the same thing on ESP8266 and ESP32.
 
 `rmt_tx_channel` / `rmt_rx_channel` are rejected with a config error on non-ESP32 platforms. The defaults (TX 0 / RX 2)
 work on ESP32 classic, C3 and S2. On an **ESP32-S3**, channels 0-3 are TX-only and 4-7 are RX-only, so you must set
@@ -58,7 +64,7 @@ pool_heater:
   rx_pin: GPIO13     # D7
   open_drain_tx: false
   invert_tx: true
-  invert_rx: false
+  invert_rx: true
 ```
 
 ### ESP32 example
