@@ -2,6 +2,20 @@ This ESPHome wrapper is for using the pool-heater-core library (https://github.c
 
 To use this you need an ESP8266 (there's also code for ESP32, still not tested) connected to the heat pump through the GND and Data cables using a level shifter.
 
+## Supported ESPHome versions
+
+**2025.10.5 – 2026.10.2** (both verified with `esphome compile`).
+
+| ESPHome    | ESP8266 (`d1_mini`) | ESP32 (`esp32dev`) |
+|------------|---------------------|--------------------|
+| 2025.10.5  | compiles            | not tested         |
+| 2026.3.0   | compiles            | compiles           |
+| 2026.10.2  | compiles            | compiles           |
+
+The climate traits use the feature-flags API on ESPHome 2025.11.0 and newer, and fall back to the old
+`set_supports_current_temperature()` on older releases (it was removed in 2026.5.0). Releases older than 2025.10.5
+or newer than 2026.10.2 may work but have not been tested.
+
 > **Breaking change:** `tx_pin` and `rx_pin` are now **required** under `pool_heater:`. Existing YAMLs must add them
 > (the previously hardcoded ESP8266 values were `tx_pin: GPIO4` and `rx_pin: GPIO13`). Note that the defaults for
 > `open_drain_tx` / `invert_tx` / `invert_rx` now target a BSS138 level shifter; if you use an inverting transistor

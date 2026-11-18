@@ -71,11 +71,13 @@ void PoolHeater::dump_config() {
 climate::ClimateTraits PoolHeaterClimate::traits() {
     auto traits = climate::ClimateTraits();
     
-    // Suppress the deprecation warning temporarily to ensure a clean build
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    // ESPHome 2025.11.0 introduced climate feature flags and deprecated
+    // set_supports_current_temperature(), which was removed in 2026.5.0.
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2025, 11, 0)
+    traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
+#else
     traits.set_supports_current_temperature(true);
-    #pragma GCC diagnostic pop
+#endif
     
     // Buttons available in Home Assistant
     traits.add_supported_mode(climate::CLIMATE_MODE_OFF);
