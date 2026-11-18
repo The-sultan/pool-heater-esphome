@@ -7,8 +7,9 @@ pool_heater_ns = cg.esphome_ns.namespace('pool_heater')
 PoolHeaterComponent = pool_heater_ns.class_('PoolHeater', cg.Component)
 
 # pool-heater-core version this wrapper is built against (commit SHA or tag).
-# Requires >= 2.0.0: invert_tx / invert_rx mean "the front end inverts the signal".
-POOL_HEATER_CORE_REF = "5695aca4c605dfef7fb5539db9087987f20a3725"
+# Requires >= 2.0.0: invert_tx / invert_rx mean "the front end inverts the signal",
+# and both drivers take (txPin, rxPin, ...).
+POOL_HEATER_CORE_REF = "dd167d377b3967e25cf6a9e7535543afa49adfa7"
 
 CONF_OPEN_DRAIN_TX = "open_drain_tx"
 CONF_INVERT_TX = "invert_tx"

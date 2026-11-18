@@ -12,13 +12,11 @@ void PoolHeater::setup() {
 
 #ifdef USE_ESP32
     ESP_LOGI(TAG, "ESP32 detected. Initializing ESP32HeaterDriver...");
-    // Note: ESP32HeaterDriver takes (rxPin, txPin, ...), unlike the ESP8266 driver.
-    auto* esp32_driver = new ESP32HeaterDriver(rx_pin_, tx_pin_, open_drain_tx_, invert_tx_, invert_rx_);
+    auto* esp32_driver = new ESP32HeaterDriver(tx_pin_, rx_pin_, open_drain_tx_, invert_tx_, invert_rx_);
     esp32_driver->setRmtChannels(rmt_tx_channel_, rmt_rx_channel_);
     driver = esp32_driver;
 #elif defined(USE_ESP8266)
     ESP_LOGI(TAG, "ESP8266 detected. Initializing ESP8266HeaterDriver...");
-    // Note: ESP8266HeaterDriver takes (txPin, rxPin, ...).
     driver = new ESP8266HeaterDriver(tx_pin_, rx_pin_, open_drain_tx_, invert_tx_, invert_rx_);
 #endif
     
